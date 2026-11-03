@@ -11,9 +11,9 @@
             <div class="flex items-center gap-2">
                 <span class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Akademik</span>
                 <span class="material-symbols-outlined text-[14px] text-[#8A94A6]">chevron_right</span>
-                <span class="text-[11px] font-bold text-[#5B50E5]">Daftar Pengajar & Tenaga Pendidik</span>
+                <span class="text-[11px] font-bold text-[#5B50E5]">Dosen & Pengajar</span>
             </div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold text-[#161A30] tracking-tight">Dosen Pengampu</h1>
+            <h1 class="text-xl lg:text-2xl font-extrabold text-[#161A30] tracking-tight">Dosen Pengampu</h1>
             <p class="text-xs sm:text-sm text-[#464555] flex items-center gap-2 flex-wrap">
                 <span class="font-semibold text-[#161A30]">Departemen Teknik Informatika</span>
                 <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#c8c4d7]"></span>
@@ -23,25 +23,10 @@
             </p>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-2.5 flex-wrap">
-            <button onclick="window.print()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white text-[#161A30] hover:bg-[#ececff] transition-all shadow-sm border border-[#E5E7EB] text-xs font-bold" type="button">
-                <span class="material-symbols-outlined text-[18px] text-[#464555]">print</span>
-                <span>Cetak Daftar (.pdf)</span>
-            </button>
-            <button onclick="exportLecturersCSV()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white text-[#161A30] hover:bg-[#ececff] transition-all shadow-sm border border-[#E5E7EB] text-xs font-bold" type="button">
-                <span class="material-symbols-outlined text-[18px] text-[#059669]">table_view</span>
-                <span>Ekspor Excel (.xlsx)</span>
-            </button>
-            <a href="{{ route('admin.lecturers.index') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5B50E5] text-white hover:bg-[#4233cc] transition-all shadow-md shadow-[#5B50E5]/25 text-xs font-bold">
-                <span class="material-symbols-outlined text-[18px]">person_add</span>
-                <span>Kelola Dosen (Admin)</span>
-            </a>
-        </div>
     </div>
 
     <!-- Metric Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <!-- Card 1 -->
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E7EB]/80 flex flex-col justify-between group hover:shadow-md transition-all">
             <div class="flex items-center justify-between mb-3">
@@ -51,12 +36,12 @@
                 </div>
             </div>
             <div class="flex flex-col">
-                <span class="text-3xl font-extrabold text-[#161A30] tracking-tight">{{ $totalLecturers }} Dosen</span>
+                <span class="text-2xl font-extrabold text-[#161A30] tracking-tight">{{ $totalLecturers }} Dosen</span>
                 <p class="text-xs text-[#464555] mt-1">Memiliki NIDN & akun</p>
             </div>
             <div class="flex items-center gap-1.5 mt-3 text-xs text-[#059669] font-semibold">
                 <span class="material-symbols-outlined text-[16px]">verified</span>
-                <span>PDDIKTI Terverifikasi</span>
+                <span>Data pengajar aktif</span>
             </div>
         </div>
 
@@ -69,12 +54,12 @@
                 </div>
             </div>
             <div class="flex flex-col">
-                <span class="text-3xl font-extrabold text-[#161A30] tracking-tight">{{ $totalSchedules }} Kelas</span>
+                <span class="text-2xl font-extrabold text-[#161A30] tracking-tight">{{ $totalSchedules }} Kelas</span>
                 <p class="text-xs text-[#464555] mt-1">Shift pagi & sore</p>
             </div>
             <div class="flex items-center gap-1.5 mt-3 text-xs text-[#5B50E5] font-semibold">
                 <span class="material-symbols-outlined text-[16px]">task_alt</span>
-                <span>Terplot Bebas Tabrakan</span>
+                <span>Jadwal mengajar aktif</span>
             </div>
         </div>
 
@@ -87,39 +72,20 @@
                 </div>
             </div>
             <div class="flex flex-col">
-                <span class="text-3xl font-extrabold text-[#161A30] tracking-tight">{{ $labs->count() }} Lab</span>
+                <span class="text-2xl font-extrabold text-[#161A30] tracking-tight">{{ $labs->count() }} Lab</span>
                 <p class="text-xs text-[#464555] mt-1">RPL · Jaringan · AI · Siber</p>
             </div>
             <div class="flex items-center gap-1.5 mt-3 text-xs text-[#059669] font-semibold">
                 <span class="material-symbols-outlined text-[16px]">check_circle</span>
-                <span>Akreditasi unggul</span>
+                <span>Bidang keahlian tersedia</span>
             </div>
         </div>
 
-        <!-- Card 4 -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E7EB]/80 flex flex-col justify-between group hover:shadow-md transition-all">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Akses Portal Mandiri</span>
-                <div class="w-10 h-10 rounded-xl bg-[#e3dfff] flex items-center justify-center text-[#4233cc] group-hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-[22px]">key</span>
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <span class="text-3xl font-extrabold text-[#161A30] tracking-tight">Login NIDN</span>
-                <p class="text-xs text-[#464555] mt-1">Akun dikelola administrator</p>
-            </div>
-            <div class="flex items-center gap-1.5 mt-3 text-xs text-[#5B50E5] font-semibold">
-                <a href="{{ route('login') }}" class="hover:underline flex items-center gap-1">
-                    <span>Masuk sebagai Dosen</span>
-                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                </a>
-            </div>
-        </div>
     </div>
 
     <!-- Filter & Search Controls -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E5E7EB]/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <div class="relative flex-1">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E5E7EB]/80 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div class="relative w-full lg:flex-1">
             <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A94A6] text-[20px]">search</span>
             <input class="w-full pl-10 pr-4 py-2.5 rounded-full bg-[#F4F5F9] text-xs sm:text-sm text-[#161A30] placeholder:text-[#8A94A6] focus:outline-none focus:ring-2 focus:ring-[#5B50E5]/30 focus:bg-white transition-all" 
                    id="lecturerSearchInput" 
@@ -127,9 +93,9 @@
                    type="text"/>
         </div>
 
-        <div class="flex items-center gap-2.5 flex-wrap">
-            <div class="relative">
-                <select id="labFilter" class="appearance-none pl-3.5 pr-8 py-2 rounded-full bg-[#F4F5F9] text-xs font-semibold text-[#161A30] focus:outline-none focus:ring-2 focus:ring-[#5B50E5]/30 cursor-pointer transition-all">
+        <div class="flex w-full lg:w-auto items-center gap-2.5 flex-wrap">
+            <div class="relative min-w-0 flex-1 lg:flex-none">
+                <select id="labFilter" class="w-full appearance-none pl-3.5 pr-8 py-2 rounded-full bg-[#F4F5F9] text-xs font-semibold text-[#161A30] focus:outline-none focus:ring-2 focus:ring-[#5B50E5]/30 cursor-pointer transition-all lg:min-w-[220px]">
                     <option value="all">Semua Bidang Keahlian / Lab</option>
                     @foreach($labs as $lab)
                         <option value="{{ $lab }}">{{ $lab }}</option>
@@ -139,7 +105,7 @@
             </div>
 
             <!-- Toggle View Mode -->
-            <div class="flex items-center bg-[#F4F5F9] p-1 rounded-full">
+            <div class="flex shrink-0 items-center bg-[#F4F5F9] p-1 rounded-full">
                 <button class="px-3 py-1.5 rounded-full bg-white text-[#5B50E5] font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all" id="btnViewGrid" type="button">
                     <span class="material-symbols-outlined text-[16px]">grid_view</span>
                     <span>Kartu</span>
@@ -164,10 +130,11 @@
                 <!-- Top Row: Avatar & NIDN badge -->
                 <div class="flex items-start gap-4 mb-4">
                     <div class="relative">
-                        <img src="{{ $l->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" 
-                             alt="{{ $l->nama }}" 
-                             class="w-14 h-14 rounded-2xl object-cover ring-2 ring-[#ececff] group-hover:scale-105 transition-transform flex-shrink-0 shadow-sm">
-                        <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#059669] border-2 border-white rounded-full"></span>
+                        @if($l->foto)
+                            <img src="{{ asset('storage/' . $l->foto) }}" alt="{{ $l->nama }}" class="w-14 h-14 rounded-2xl object-cover ring-2 ring-[#ececff] group-hover:scale-105 transition-transform flex-shrink-0 shadow-sm">
+                        @else
+                            <span class="w-14 h-14 rounded-2xl bg-[#F4F5F9] text-[#5B50E5] flex items-center justify-center text-lg font-bold ring-2 ring-[#ececff] shadow-sm">{{ strtoupper(substr($l->nama, 0, 1)) }}</span>
+                        @endif
                     </div>
 
                     <div class="flex-1 min-w-0">
@@ -253,9 +220,11 @@
                         
                         <td class="py-4 px-6">
                             <div class="flex items-center gap-3">
-                                <img src="{{ $l->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" 
-                                     alt="{{ $l->nama }}" 
-                                     class="w-9 h-9 rounded-full object-cover ring-1 ring-[#ececff] flex-shrink-0">
+                                @if($l->foto)
+                                    <img src="{{ asset('storage/' . $l->foto) }}" alt="{{ $l->nama }}" class="w-9 h-9 rounded-full object-cover ring-1 ring-[#ececff] flex-shrink-0">
+                                @else
+                                    <span class="w-9 h-9 rounded-full bg-[#F4F5F9] text-[#5B50E5] flex items-center justify-center text-xs font-bold ring-1 ring-[#ececff] flex-shrink-0">{{ strtoupper(substr($l->nama, 0, 1)) }}</span>
+                                @endif
                                 <div class="flex flex-col">
                                     <span class="font-bold text-[#161A30] text-sm">{{ $l->nama }}</span>
                                     <span class="text-xs text-[#8A94A6]">Gelar: {{ $l->gelar ?? '-' }}</span>
@@ -546,20 +515,5 @@
         if (e.target === this) closeLecturerScheduleModal();
     });
 
-    function exportLecturersCSV() {
-        let csv = 'NIDN,Nama Dosen,Laboratorium,Email\n';
-        document.querySelectorAll('.lecturer-row').forEach(row => {
-            const nama = row.querySelector('.text-sm')?.textContent.trim() || '';
-            const nidn = row.getAttribute('data-nidn') || '';
-            const lab = row.getAttribute('data-lab') || '';
-            csv += `"${nidn}","${nama}","${lab}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Daftar_Dosen_TI_Universitas_Surakarta_2026_2027.csv';
-        a.click();
-    }
 </script>
 @endpush

@@ -11,22 +11,30 @@ use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
 {
-    public function requestForm()
+    public function requestForm(Request $request)
     {
-        return view('auth.forgot-password');
+        $role = $request->query('role', 'mahasiswa');
+        if (!in_array($role, ['mahasiswa', 'dosen', 'admin'], true)) {
+            $role = 'mahasiswa';
+        }
+
+        return view('auth.forgot-password', compact('role'));
     }
 
     public function sendResetLink(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'role' => 'required|in:mahasiswa,dosen,admin',
+        ]);
 
-        $exists = User::where('email', $request->email)
-            ->whereIn('role', ['mahasiswa', 'dosen'])
+        $exists = User::where('email', $validated['email'])
+            ->where('role', $validated['role'])
             ->where('is_active', true)
             ->exists();
 
         if ($exists) {
-            Password::sendResetLink(['email' => $request->email]);
+            Password::sendResetLink(['email' => $validated['email']]);
         }
 
         return back()->with('status', 'Jika email terdaftar, tautan reset password telah dikirim.');

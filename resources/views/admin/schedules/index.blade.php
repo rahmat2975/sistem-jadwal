@@ -7,7 +7,6 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
             <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FEF2F2] text-[#EF4444]">Panel Administrator</span>
                 <h1 class="text-xl sm:text-2xl font-bold text-[#161A30]">Kelola Jadwal Perkuliahan</h1>
             </div>
             <p class="text-xs sm:text-sm text-[#8A94A6] mt-1">

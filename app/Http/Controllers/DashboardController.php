@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
 use App\Models\Course;
-use App\Models\Lecturer;
 use App\Models\Room;
 use App\Models\Schedule;
 use Carbon\Carbon;
@@ -50,11 +49,34 @@ class DashboardController extends Controller
             $schedulesQuery->where('jam_mulai', '>=', '14:30:00');
         }
 
+        $allowedSemesters = ($activeYear?->semester ?? 'ganjil') === 'genap'
+            ? [2, 4, 6, 8]
+            : [1, 3, 5, 7];
+        $selectedSemester = $request->query('semester', 'semua');
+        if ($selectedSemester !== 'semua' && in_array((int) $selectedSemester, $allowedSemesters, true)) {
+            if ((int) $selectedSemester === 7) {
+                $schedulesQuery->where(function ($scheduleQuery) {
+                    $scheduleQuery->where('semester', 7)
+                        ->orWhereHas('course', function ($courseQuery) {
+                            $courseQuery->where('semester_ideal', 7)
+                                ->orWhere('tipe', 'pilihan');
+                        });
+                });
+            } else {
+                $schedulesQuery->where('semester', (int) $selectedSemester);
+            }
+        } else {
+            $selectedSemester = 'semua';
+        }
+
         $todaySchedules = $schedulesQuery->get();
+        $this->applyCombinedCourseDisplay($todaySchedules);
 
         // Calculate quick summary metrics
         $totalClassesToday = $todaySchedules->count();
         $totalSksToday = $todaySchedules->sum(fn($s) => $s->course?->sks ?? 0);
+        $missingRoomCount = $todaySchedules->filter(fn($s) => !$s->room)->count();
+        $missingLecturerCount = $todaySchedules->filter(fn($s) => $s->lecturers->isEmpty())->count();
         
         $completedCount = 0;
         $activeCount = 0;
@@ -88,25 +110,52 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
-        // Rekan Dosen Pengampu (exclude current lecturer)
-        $colleagues = Lecturer::where('is_active', true)
-            ->when($currentLecturer, fn ($q) => $q->where('id', '!=', $currentLecturer->id))
-            ->take(4)
-            ->get();
-
         return view('dashboard', compact(
             'activeYear',
             'currentLecturer',
             'formattedDate',
             'todaySchedules',
             'taughtCourses',
-            'colleagues',
             'totalClassesToday',
             'totalSksToday',
+            'missingRoomCount',
+            'missingLecturerCount',
             'completedCount',
             'activeCount',
+            'upcomingCount',
             'filter'
+            , 'selectedSemester'
+            , 'allowedSemesters'
             , 'academicYears'
         ));
+    }
+
+    private function applyCombinedCourseDisplay($schedules): void
+    {
+        $courses = Course::withTrashed()->get(['id', 'nama', 'sks', 'semester_ideal', 'is_active']);
+        $groups = $courses->groupBy(function ($course) {
+            $baseName = preg_replace('/^praktikum\s*/i', '', trim((string) $course->nama));
+            return ($course->semester_ideal ?: 0) . '|' . strtolower(preg_replace('/\s+/', ' ', $baseName));
+        });
+        $combined = [];
+
+        foreach ($groups as $group) {
+            $theory = $group
+                ->filter(fn ($course) => !preg_match('/^praktikum\s*/i', trim((string) $course->nama)))
+                ->sortByDesc(fn ($course) => (int) $course->is_active)
+                ->first();
+            $practical = $group->filter(fn ($course) => preg_match('/^praktikum\s*/i', trim((string) $course->nama)));
+
+            if ($theory && $practical->isNotEmpty()) {
+                $display = ['name' => trim((string) $theory->nama), 'sks' => (int) $theory->sks + (int) $practical->sum('sks')];
+                foreach ($group as $course) $combined[$course->id] = $display;
+            }
+        }
+
+        $schedules->each(function ($schedule) use ($combined) {
+            $display = $combined[$schedule->course_id] ?? null;
+            $schedule->display_course_name = $display['name'] ?? $schedule->course?->nama;
+            $schedule->display_sks = $display['sks'] ?? ($schedule->course?->sks ?? 0);
+        });
     }
 }

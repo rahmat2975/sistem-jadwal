@@ -29,31 +29,19 @@
             </p>
         </div>
 
-        <!-- Global Action Buttons -->
-        <div class="flex flex-wrap items-center gap-2.5">
-            <button onclick="window.print()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white text-[#161A30] font-bold text-xs border border-[#E5E7EB] shadow-xs hover:bg-[#F9FAFC] transition-all cursor-pointer" type="button">
-                <span class="material-symbols-outlined text-[18px] text-[#8A94A6]">print</span>
-                <span>Cetak Daftar Ruang</span>
-            </button>
-
-            <a href="{{ route('jadwal.semua') }}" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5B50E5] hover:bg-[#4233cc] text-white font-bold text-xs shadow-md shadow-[#5B50E5]/25 transition-all">
-                <span class="material-symbols-outlined text-[18px]">calendar_month</span>
-                <span>Lihat Alokasi Jadwal</span>
-            </a>
-        </div>
     </div>
 
     <!-- 2. KPI METRIC SUMMARY CARDS -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <!-- Card 1: Total Ruangan -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between">
-            <div>
-                <span class="text-xs font-bold text-[#8A94A6] uppercase tracking-wider">Total Ruangan Terdata</span>
-                <div class="flex items-baseline gap-2 mt-1.5">
-                    <span class="text-2xl sm:text-3xl font-extrabold text-[#161A30]">{{ $totalRooms }}</span>
-                    <span class="text-xs text-[#059669] font-bold">100% Aktif</span>
+        <div class="min-h-[150px] bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between gap-4">
+            <div class="min-w-0">
+                <span class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Total Ruangan Terdata</span>
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold leading-none text-[#161A30]">{{ $totalRooms }}</span>
+                    <span class="rounded-full bg-[#ECFDF5] px-2 py-1 text-[10px] font-bold text-[#059669]">Aktif</span>
                 </div>
-                <div class="text-xs text-[#8A94A6] mt-1">{{ $totalLab }} Lab · {{ $totalKelas }} Ruang Teori</div>
+                <div class="mt-2 text-xs text-[#8A94A6]">{{ $totalLab }} Lab <span class="mx-1 text-[#CBD5E1]">·</span> {{ $totalKelas }} Ruang Teori</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined text-[22px]">meeting_room</span>
@@ -61,16 +49,14 @@
         </div>
 
         <!-- Card 2: Okupansi Real-Time -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between">
-            <div>
-                <span class="text-xs font-bold text-[#8A94A6] uppercase tracking-wider">Status Okupansi Saat Ini</span>
-                <div class="flex items-baseline gap-2 mt-1.5">
-                    <span class="text-2xl sm:text-3xl font-extrabold {{ $occupiedCount > 0 ? 'text-[#059669]' : 'text-[#161A30]' }}">
-                        {{ $occupiedCount }}
-                    </span>
-                    <span class="text-xs font-bold text-[#059669]">Sedang Digunakan</span>
+        <div class="min-h-[150px] bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between gap-4">
+            <div class="min-w-0">
+                <span class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Status Okupansi Saat Ini</span>
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold leading-none {{ $occupiedCount > 0 ? 'text-[#059669]' : 'text-[#161A30]' }}">{{ $occupiedCount }}</span>
+                    <span class="rounded-full {{ $occupiedCount > 0 ? 'bg-[#ECFDF5] text-[#059669]' : 'bg-[#F4F5F9] text-[#64748B]' }} px-2 py-1 text-[10px] font-bold">{{ $occupiedCount > 0 ? 'Sedang digunakan' : 'Tidak terpakai' }}</span>
                 </div>
-                <div class="text-xs text-[#8A94A6] mt-1">{{ $availableCount }} Ruang Kosong / Tersedia</div>
+                <div class="mt-2 text-xs text-[#8A94A6]">{{ $availableCount }} Ruang Kosong <span class="mx-1 text-[#CBD5E1]">·</span> Tersedia</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined text-[22px]">nest_clock_farsight_analog</span>
@@ -78,34 +64,20 @@
         </div>
 
         <!-- Card 3: Total Kapasitas Kursi -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between">
-            <div>
-                <span class="text-xs font-bold text-[#8A94A6] uppercase tracking-wider">Total Kapasitas Kursi</span>
-                <div class="flex items-baseline gap-2 mt-1.5">
-                    <span class="text-2xl sm:text-3xl font-extrabold text-[#161A30]">{{ $totalKapasitas }}</span>
-                    <span class="text-xs text-[#8A94A6] font-semibold">Kursi / Workstation</span>
+        <div class="min-h-[150px] bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between gap-4">
+            <div class="min-w-0">
+                <span class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Total Kapasitas Kursi</span>
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold leading-none text-[#161A30]">{{ $totalKapasitas }}</span>
+                    <span class="rounded-full bg-[#EEF2FF] px-2 py-1 text-[10px] font-bold text-[#5B50E5]">Kursi</span>
                 </div>
-                <div class="text-xs text-[#8A94A6] mt-1">Rata-rata {{ $totalRooms > 0 ? round($totalKapasitas / $totalRooms) : 0 }} kursi / ruang</div>
+                <div class="mt-2 text-xs text-[#8A94A6]">Rata-rata {{ $totalRooms > 0 ? round($totalKapasitas / $totalRooms) : 0 }} kursi <span class="mx-1 text-[#CBD5E1]">·</span> per ruang</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-[#ececff] text-[#5B50E5] flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined text-[22px]">airline_seat_recline_normal</span>
             </div>
         </div>
 
-        <!-- Card 4: Integritas Alokasi -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E5E7EB] flex items-start justify-between">
-            <div>
-                <span class="text-xs font-bold text-[#8A94A6] uppercase tracking-wider">Zona Waktu Sistem</span>
-                <div class="flex items-baseline gap-2 mt-1.5">
-                    <span class="text-2xl sm:text-3xl font-extrabold text-[#059669]">WIB</span>
-                    <span class="text-xs text-[#059669] font-bold">UTC+7</span>
-                </div>
-                <div class="text-xs text-[#8A94A6] mt-1">Waktu kampus · WIB</div>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-[22px]">schedule</span>
-            </div>
-        </div>
     </div>
 
     <!-- 3. FILTER & SEARCH TOOLBAR -->

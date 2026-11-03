@@ -94,6 +94,16 @@
                                 <i data-lucide="calendar-check" class="w-4 h-4 {{ request()->routeIs('admin.jadwal.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
                                 <span>Kelola Jadwal</span>
                             </a>
+                            <a href="{{ route('admin.academic-years.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.academic-years.*') ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/30' : 'text-[#464555] hover:bg-[#F4F2FF] hover:text-[#5B50E5]' }}">
+                                <i data-lucide="calendar-range" class="h-4 w-4 {{ request()->routeIs('admin.academic-years.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
+                                <span>Periode Akademik</span>
+                            </a>
+                            {{-- Generator Jadwal dinonaktifkan sementara, kode tetap disimpan.
+                            <a href="{{ route('admin.schedule-generator.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.schedule-generator.*') ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/30' : 'text-[#464555] hover:bg-[#F4F2FF] hover:text-[#5B50E5]' }}">
+                                <i data-lucide="wand-sparkles" class="w-4 h-4 {{ request()->routeIs('admin.schedule-generator.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
+                                <span>Generator Jadwal</span>
+                            </a>
+                            --}}
                             <a href="{{ route('admin.courses.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.courses.*') ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/30' : 'text-[#464555] hover:bg-[#F4F2FF] hover:text-[#5B50E5]' }}">
                                 <i data-lucide="library" class="w-4 h-4 {{ request()->routeIs('admin.courses.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
                                 <span>Kelola Mata Kuliah</span>
@@ -101,6 +111,10 @@
                             <a href="{{ route('admin.lecturers.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.lecturers.*') ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/30' : 'text-[#464555] hover:bg-[#F4F2FF] hover:text-[#5B50E5]' }}">
                                 <i data-lucide="users" class="w-4 h-4 {{ request()->routeIs('admin.lecturers.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
                                 <span>Kelola Pengajar</span>
+                            </a>
+                            <a href="{{ route('admin.rooms.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.rooms.*') ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/30' : 'text-[#464555] hover:bg-[#F4F2FF] hover:text-[#5B50E5]' }}">
+                                <i data-lucide="door-open" class="w-4 h-4 {{ request()->routeIs('admin.rooms.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
+                                <span>Kelola Ruangan</span>
                             </a>
                             <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.users.*') ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/30' : 'text-[#464555] hover:bg-[#F4F2FF] hover:text-[#5B50E5]' }}">
                                 <i data-lucide="key-round" class="w-4 h-4 {{ request()->routeIs('admin.users.*') ? 'text-white' : 'text-[#8A94A6]' }}"></i>
@@ -161,6 +175,17 @@
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
 
+                    <!-- MOBILE BRAND -->
+                    <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-2 sm:hidden" aria-label="SI Jadwal TI - Universitas Surakarta">
+                        <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#5B50E5] to-[#818CF8] text-white shadow-md shadow-[#5B50E5]/25">
+                            <span class="material-symbols-outlined text-[21px]">school</span>
+                        </div>
+                        <div class="min-w-0 leading-tight">
+                            <div class="truncate text-sm font-extrabold tracking-tight text-[#161A30]">SI Jadwal TI</div>
+                            <div class="truncate text-[10px] font-medium text-[#8A94A6]">Universitas Surakarta</div>
+                        </div>
+                    </a>
+
                     <div class="relative w-full hidden sm:block">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8A94A6]">
                             <i data-lucide="search" class="w-4 h-4"></i>
@@ -178,15 +203,6 @@
 
                 <!-- RIGHT HEADER CONTROLS & PROFILE -->
                 <div class="flex items-center gap-2.5 sm:gap-4">
-                    <!-- ACTION ICONS (DESKTOP) -->
-                    <a href="{{ route('jadwal.semua') }}" title="Lihat Semua Jadwal" class="hidden sm:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#E5E7EB] items-center justify-center text-[#464555] hover:bg-[#F4F5F9] transition-all">
-                        <i data-lucide="calendar" class="w-4 h-4"></i>
-                    </a>
-                    
-                    <a href="{{ route('mata-kuliah.index') }}" title="Katalog Mata Kuliah" class="hidden sm:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#E5E7EB] items-center justify-center text-[#464555] hover:bg-[#F4F5F9] transition-all">
-                        <i data-lucide="book-open" class="w-4 h-4"></i>
-                    </a>
-
                     <!-- DIVIDER -->
                     <div class="h-8 w-px bg-[#E5E7EB] hidden sm:block"></div>
 
@@ -201,36 +217,40 @@
                                 $roleBg = 'bg-[#FEF2F2] text-[#EF4444]';
                                 $subLabel = 'Username';
                                 $subInfo = $user->username;
-                                $avatar = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80';
                             } elseif ($user->isMahasiswa()) {
                                 $roleName = 'Mahasiswa';
                                 $roleBg = 'bg-[#ECFDF5] text-[#059669]';
                                 $subLabel = 'NIM';
                                 $subInfo = $user->username;
-                                $avatar = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80';
                             } else {
                                 $roleName = 'Dosen TI';
                                 $roleBg = 'bg-[#EEF2FF] text-[#5B50E5]';
                                 $subLabel = 'NIDN';
                                 $subInfo = $lecturer?->nidn ?? $user->username;
-                                $avatar = $lecturer?->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
                             }
+                            $avatar = $user->foto ? asset('storage/' . $user->foto) : null;
+                            $avatarInitial = strtoupper(substr($displayName, 0, 1));
                         @endphp
-                        <div class="flex items-center gap-2 sm:gap-3 pl-1">
-                            <img src="{{ $avatar }}" 
-                                 alt="User Avatar" 
-                                 class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-[#5B50E5]/20 flex-shrink-0">
-                            <div class="text-left hidden md:block">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-xs font-bold text-[#161A30] truncate max-w-[140px]">{{ $displayName }}</span>
-                                    <span class="px-2 py-0.5 rounded text-xs font-bold {{ $roleBg }}">{{ $roleName }}</span>
-                                </div>
-                                <div class="text-xs text-[#8A94A6]">{{ $subLabel }}: {{ $subInfo }}</div>
-                            </div>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <a href="{{ route('pengaturan.akun') }}" class="group flex min-w-0 items-center gap-2.5 rounded-2xl border border-[#E5E7EB] bg-white px-1.5 py-1.5 sm:px-2.5 hover:border-[#C7C4FF] hover:bg-[#FAFAFF] transition-all" title="Buka Pengaturan Akun">
+                                @if($avatar)
+                                    <img src="{{ $avatar }}" alt="Foto {{ $displayName }}" class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl object-cover ring-2 ring-[#5B50E5]/15 flex-shrink-0">
+                                @else
+                                    <span class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-[#EEF2FF] to-[#F4F5F9] text-[#5B50E5] flex items-center justify-center text-sm font-extrabold ring-1 ring-[#5B50E5]/10 flex-shrink-0">{{ $avatarInitial }}</span>
+                                @endif
+                                <span class="hidden min-w-0 text-left lg:block">
+                                    <span class="flex max-w-[190px] items-center gap-1.5">
+                                        <span class="truncate text-xs font-extrabold text-[#161A30]">{{ $displayName }}</span>
+                                        <span class="shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide {{ $roleBg }}">{{ $roleName }}</span>
+                                    </span>
+                                    <span class="mt-0.5 block max-w-[190px] truncate text-[10px] font-medium text-[#8A94A6]">{{ $subLabel }}: {{ $subInfo }}</span>
+                                </span>
+                                <i data-lucide="settings-2" class="hidden h-3.5 w-3.5 text-[#A0A7B5] transition-transform group-hover:text-[#5B50E5] lg:block"></i>
+                            </a>
                             <form method="POST" action="{{ route('logout') }}" class="inline-block m-0">
                                 @csrf
-                                <button type="submit" title="Keluar / Logout" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-[#E5E7EB] bg-white text-[#EF4444] hover:bg-[#FEF2F2] flex items-center justify-center transition-all cursor-pointer">
-                                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                                <button type="submit" title="Keluar / Logout" class="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-[#FECACA] bg-[#FFF7F7] text-[#EF4444] hover:bg-[#FEF2F2] transition-all cursor-pointer">
+                                    <i data-lucide="log-out" class="h-4 w-4"></i>
                                 </button>
                             </form>
                         </div>

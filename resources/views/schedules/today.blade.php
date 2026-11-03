@@ -17,8 +17,15 @@
             </div>
             <div class="flex flex-wrap items-center gap-3 mt-1">
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#161A30] tracking-tight">
-                    Jadwal Perkuliahan Hari {{ $days[$selectedDay] ?? 'Ini' }}
+                    {{ $isLecturerView ? 'Jadwal Mengajar' : 'Jadwal Perkuliahan' }} Hari {{ $days[$selectedDay] ?? 'Ini' }}
                 </h1>
+                @if($isLecturerView)
+                    <div class="mt-1 inline-flex w-fit max-w-full items-center gap-2 rounded-xl bg-[#EEF2FF] px-3 py-1.5 text-xs font-bold text-[#5B50E5]">
+                        <span class="material-symbols-outlined text-[16px]">person</span>
+                        <span class="truncate">{{ $currentLecturer->nama }}</span>
+                        <span class="font-mono text-[10px] text-[#818CF8]">{{ $currentLecturer->nidn }}</span>
+                    </div>
+                @endif
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EEF2FF] text-[#4F46E5] text-xs font-bold shadow-xs border border-[#4F46E5]/15">
                     <span class="material-symbols-outlined text-[15px]">calendar_today</span>
                     <span>{{ $formattedDate }}</span>
@@ -28,19 +35,9 @@
             </div>
         </div>
 
-        <!-- Global Action Buttons -->
-        <div class="flex items-center gap-2.5 flex-wrap">
-            <a href="{{ route('jadwal.semua') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5B50E5] hover:bg-[#4233cc] text-white shadow-md shadow-[#5B50E5]/25 transition-all text-xs font-bold">
-                <span class="material-symbols-outlined text-[18px]">calendar_view_week</span>
-                <span>Semua Jadwal</span>
-            </a>
-            <a href="{{ route('ruang.index') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-[#F9FAFC] text-[#161A30] shadow-xs transition-all text-xs font-bold border border-[#E5E7EB]">
-                <span class="material-symbols-outlined text-[18px] text-[#5B50E5]">meeting_room</span>
-                <span>Status Ruang</span>
-            </a>
-        </div>
     </div>
 
+    @if(false)
     <!-- 2. CONTEXTUAL WELCOME BANNER (DOSEN / MAHASISWA / ADMIN) -->
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4233cc] via-[#5B50E5] to-[#6063ee] text-white shadow-xl shadow-[#5B50E5]/20 p-6 sm:p-7">
         <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
@@ -72,10 +69,6 @@
                                 </span>
                                 <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-xs font-semibold">
                                     Dosen Pengampu
-                                </span>
-                            @else
-                                <span class="px-2.5 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-bold">
-                                    Administrator Sistem
                                 </span>
                             @endif
                         @else
@@ -119,6 +112,8 @@
         </div>
     </div>
 
+    @endif
+
     <!-- 3. DAY SELECTOR TABS (SENIN - JUMAT) -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 bg-white p-2 rounded-2xl border border-[#E5E7EB] shadow-xs">
         <span class="text-xs font-bold text-[#8A94A6] uppercase tracking-wider px-3 hidden sm:inline-block">Pilih Hari:</span>
@@ -127,7 +122,7 @@
                 $isActiveTab = ($selectedDay === $num);
                 $isRealToday = ($realDay === $num);
             @endphp
-            <a href="{{ route('jadwal.hari-ini', ['hari' => $num, 'shift' => $selectedShift]) }}" 
+            <a href="{{ route('jadwal.hari-ini', ['academic_year_id' => $activeYear?->id, 'hari' => $num, 'shift' => $selectedShift, 'semester' => $selectedSemester, 'q' => $search]) }}" 
                class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap {{ $isActiveTab ? 'bg-[#5B50E5] text-white shadow-md shadow-[#5B50E5]/25' : 'bg-[#F4F5F9] text-[#464555] hover:bg-[#EEF2FF] hover:text-[#5B50E5]' }}">
                 <span>{{ $dayName }}</span>
                 @if($isRealToday)
@@ -207,6 +202,7 @@
         </div>
     </div>
 
+    @if(false)
     <!-- 5. REAL-TIME SPOTLIGHT CLASS CARD -->
     @if($spotlightSession)
         @php
@@ -232,10 +228,6 @@
                                 <span class="material-symbols-outlined text-[15px]">schedule</span>
                                 SESI BERIKUTNYA HARI INI
                             </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F1F3F7] text-[#64748B] text-xs font-bold">
-                                JADWAL TERPILIH
-                            </span>
                         @endif
 
                         <span class="px-2.5 py-0.5 rounded-full bg-[#F4F5F9] text-[#161A30] text-xs font-semibold">
@@ -255,10 +247,10 @@
 
                     <div>
                         <div class="text-xs text-[#8A94A6] font-mono mb-0.5">
-                            KODE MK: <strong class="text-[#161A30]">{{ $spotlightSession->course?->kode }}</strong> · {{ $spotlightSession->course?->sks }} SKS
+                            KODE MK: <strong class="text-[#161A30]">{{ $spotlightSession->course?->kode }}</strong> · {{ $spotlightSession->display_sks ?? $spotlightSession->course?->sks }} SKS
                         </div>
                         <h3 class="text-xl sm:text-2xl font-extrabold text-[#161A30] tracking-tight">
-                            {{ $spotlightSession->course?->nama }}
+                            {{ $spotlightSession->display_course_name ?? $spotlightSession->course?->nama }}
                         </h3>
                         @if($spotlightSession->catatan)
                             <p class="text-xs text-[#464555] mt-1 bg-[#F9FAFC] p-2 rounded-xl border border-[#E5E7EB]">
@@ -335,47 +327,59 @@
             </div>
         </div>
     @endif
+    @endif
 
     <!-- 6. FILTER & SEARCH TOOLBAR -->
     <div class="bg-white rounded-2xl p-4 border border-[#E5E7EB] shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <!-- Search Input -->
-        <form method="GET" action="{{ route('jadwal.hari-ini') }}" class="flex-1 relative flex items-center">
-            <select name="academic_year_id" onchange="this.form.submit()" class="mr-2 bg-[#F4F5F9] text-[#161A30] px-3 py-2 rounded-xl text-xs outline-none">
+        <form method="GET" action="{{ route('jadwal.hari-ini') }}" class="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+            <select name="academic_year_id" onchange="this.form.submit()" class="bg-[#F4F5F9] text-[#161A30] px-3 py-2 rounded-xl text-xs outline-none sm:max-w-[180px]">
                 @foreach($academicYears as $year)
                     <option value="{{ $year->id }}" {{ $activeYear?->id === $year->id ? 'selected' : '' }}>{{ $year->tahun }} · {{ ucfirst($year->semester) }}</option>
                 @endforeach
             </select>
             <input type="hidden" name="hari" value="{{ $selectedDay }}">
             <input type="hidden" name="shift" value="{{ $selectedShift }}">
-            <span class="material-symbols-outlined absolute left-3 text-[#8A94A6] text-[18px]">search</span>
-            <input type="text" name="q" value="{{ $search }}" placeholder="Cari mata kuliah, dosen, atau ruang..." 
-                   class="w-full bg-[#F4F5F9] text-[#161A30] placeholder:text-[#8A94A6] pl-9 pr-4 py-2 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20 border border-transparent focus:border-[#5B50E5]/30 transition-all">
+            <select name="semester" onchange="this.form.submit()" class="bg-[#F4F5F9] text-[#161A30] px-3 py-2 rounded-xl text-xs outline-none sm:max-w-[150px]">
+                <option value="all" @selected($selectedSemester === 'all')>Semua Semester</option>
+                @foreach(($isLecturerView ? $lecturerSemesters : collect(range(1, 8))) as $semester)
+                    <option value="{{ $semester }}" @selected((string) $selectedSemester === (string) $semester)>Semester {{ $semester }}</option>
+                @endforeach
+            </select>
+            <div class="relative min-w-0 flex-1">
+                <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#8A94A6]">search</span>
+                <input type="text" name="q" value="{{ $search }}" placeholder="Cari mata kuliah, dosen, atau ruang..." class="w-full bg-[#F4F5F9] text-[#161A30] placeholder:text-[#8A94A6] pl-10 pr-4 py-2 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20 border border-transparent focus:border-[#5B50E5]/30 transition-all">
+            </div>
         </form>
 
         <!-- Shift Filters -->
         <div class="flex items-center gap-1.5 p-1 bg-[#F4F5F9] rounded-xl self-start sm:self-auto overflow-x-auto">
-            <a href="{{ route('jadwal.hari-ini', ['hari' => $selectedDay, 'shift' => 'all', 'q' => $search]) }}" 
+            <a href="{{ route('jadwal.hari-ini', ['academic_year_id' => $activeYear?->id, 'hari' => $selectedDay, 'shift' => 'all', 'semester' => $selectedSemester, 'q' => $search]) }}" 
                class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $selectedShift === 'all' ? 'bg-white text-[#5B50E5] shadow-xs' : 'text-[#464555] hover:text-[#161A30]' }}">
-                Semua Shift
+                Semua Shift ({{ $shiftCounts->sum() }})
             </a>
-            <a href="{{ route('jadwal.hari-ini', ['hari' => $selectedDay, 'shift' => 'pagi', 'q' => $search]) }}" 
+            <a href="{{ route('jadwal.hari-ini', ['academic_year_id' => $activeYear?->id, 'hari' => $selectedDay, 'shift' => 'pagi', 'semester' => $selectedSemester, 'q' => $search]) }}" 
                class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $selectedShift === 'pagi' ? 'bg-white text-[#5B50E5] shadow-xs' : 'text-[#464555] hover:text-[#161A30]' }}">
-                Shift Pagi
+                Shift Pagi ({{ $shiftCounts->get('pagi', 0) }})
             </a>
-            <a href="{{ route('jadwal.hari-ini', ['hari' => $selectedDay, 'shift' => 'sore', 'q' => $search]) }}" 
+            <a href="{{ route('jadwal.hari-ini', ['academic_year_id' => $activeYear?->id, 'hari' => $selectedDay, 'shift' => 'sore', 'semester' => $selectedSemester, 'q' => $search]) }}" 
                class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $selectedShift === 'sore' ? 'bg-white text-[#5B50E5] shadow-xs' : 'text-[#464555] hover:text-[#161A30]' }}">
-                Shift Sore
+                Shift Sore ({{ $shiftCounts->get('sore', 0) }})
             </a>
         </div>
     </div>
 
     <!-- 7. SCHEDULE CARDS LIST -->
-    <div class="space-y-3">
+    <div id="todayScheduleList" class="space-y-3">
         <div class="flex items-center justify-between px-1">
             <h3 class="text-sm font-extrabold text-[#161A30]">
-                Daftar Perkuliahan Hari {{ $days[$selectedDay] ?? 'Ini' }} ({{ $schedules->count() }} Kelas)
+                {{ $isLecturerView ? 'Jadwal Mengajar' : 'Daftar Perkuliahan' }} Hari {{ $days[$selectedDay] ?? 'Ini' }} ({{ $schedules->count() }} Kelas)
             </h3>
-            <span class="text-xs text-[#8A94A6]">Zona Waktu Indonesia Barat (WIB)</span>
+            @if($isLecturerView)
+                <span class="rounded-full bg-[#EEF2FF] px-2.5 py-1 text-[10px] font-bold text-[#5B50E5]">Jadwal saya</span>
+            @else
+                <span class="text-xs text-[#8A94A6]">Zona Waktu Indonesia Barat (WIB)</span>
+            @endif
         </div>
 
         @forelse($schedules as $item)
@@ -385,7 +389,7 @@
                 $isItemUpcoming = ($itemDetail['badge'] === 'upcoming');
                 $isItemDone = ($itemDetail['badge'] === 'done');
             @endphp
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-[#E5E7EB] hover:border-[#5B50E5]/40 hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 {{ $isItemActive ? 'ring-2 ring-[#059669]/30 bg-[#ECFDF5]/20' : '' }}">
+            <div data-today-schedule class="bg-white rounded-2xl p-4 sm:p-5 border border-[#E5E7EB] hover:border-[#5B50E5]/40 hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 {{ $isItemActive ? 'ring-2 ring-[#059669]/30 bg-[#ECFDF5]/20' : '' }}">
                 
                 <!-- Left Details -->
                 <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -406,13 +410,13 @@
                                 {{ $item->course?->kode }}
                             </span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F4F5F9] text-[#464555]">
-                                {{ $item->course?->sks }} SKS
+                                {{ $item->display_sks ?? $item->course?->sks }} SKS
                             </span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F4F5F9] text-[#464555]">
                                 {{ $item->kelas }}
                             </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F4F5F9] text-[#464555]">
-                                Smt {{ $item->semester }}
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EEF2FF] text-[#4F46E5]">
+                                Semester {{ $item->display_semester ?? $item->semester }}
                             </span>
 
                             @if($isItemActive)
@@ -432,7 +436,7 @@
                         </div>
 
                         <h4 class="text-sm sm:text-base font-extrabold text-[#161A30] truncate">
-                            {{ $item->course?->nama }}
+                            {{ $item->display_course_name ?? $item->course?->nama }}
                         </h4>
 
                         <div class="flex flex-wrap items-center gap-3 text-xs text-[#8A94A6] mt-1">
@@ -451,15 +455,6 @@
                     </div>
                 </div>
 
-                <!-- Right Actions -->
-                <div class="flex items-center gap-2 self-end md:self-center flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#F4F5F9]">
-                    <a href="{{ route('mata-kuliah.index') }}" class="px-3 py-1.5 rounded-xl bg-[#F4F5F9] hover:bg-[#EEF2FF] text-[#161A30] text-xs font-semibold transition-colors">
-                        Silabus MK
-                    </a>
-                    <a href="{{ route('jadwal.semua') }}" class="px-3 py-1.5 rounded-xl bg-[#EEF2FF] hover:bg-[#5B50E5] text-[#5B50E5] hover:text-white text-xs font-bold transition-all">
-                        Plotting
-                    </a>
-                </div>
             </div>
         @empty
             <div class="bg-white rounded-3xl p-10 text-center border border-[#E5E7EB] shadow-xs flex flex-col items-center justify-center">
@@ -470,15 +465,56 @@
                 <p class="text-xs text-[#8A94A6] max-w-sm mt-1">
                     Tidak ditemukan agenda perkuliahan untuk filter hari dan shift yang Anda pilih. Silakan ganti hari atau reset filter.
                 </p>
-                <a href="{{ route('jadwal.hari-ini', ['hari' => $selectedDay, 'shift' => 'all']) }}" class="mt-4 px-4 py-2 rounded-xl bg-[#5B50E5] text-white text-xs font-bold">
+                <a href="{{ route('jadwal.hari-ini', ['academic_year_id' => $activeYear?->id, 'hari' => $selectedDay, 'shift' => 'all', 'semester' => 'all']) }}" class="mt-4 px-4 py-2 rounded-xl bg-[#5B50E5] text-white text-xs font-bold">
                     Reset Filter
                 </a>
             </div>
         @endforelse
+
+        <div id="todaySchedulePagination" class="hidden items-center justify-between rounded-2xl border border-[#E5E7EB] bg-white px-4 py-3">
+            <span id="todaySchedulePaginationInfo" class="text-xs text-[#8A94A6]"></span>
+            <div class="flex items-center gap-1.5">
+                <button type="button" id="todaySchedulePrevious" class="rounded-lg border border-[#E5E7EB] px-3 py-2 text-xs font-bold text-[#64748B] transition hover:bg-[#F4F5F9] disabled:cursor-not-allowed disabled:opacity-40">Sebelumnya</button>
+                <button type="button" id="todayScheduleNext" class="rounded-lg border border-[#E5E7EB] px-3 py-2 text-xs font-bold text-[#64748B] transition hover:bg-[#F4F5F9] disabled:cursor-not-allowed disabled:opacity-40">Berikutnya</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const items = Array.from(document.querySelectorAll('[data-today-schedule]'));
+        const pagination = document.getElementById('todaySchedulePagination');
+        const info = document.getElementById('todaySchedulePaginationInfo');
+        const previous = document.getElementById('todaySchedulePrevious');
+        const next = document.getElementById('todayScheduleNext');
+        const pageSize = 10;
+        let currentPage = 1;
+        const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+
+        if (!pagination || items.length <= pageSize) return;
+        pagination.classList.remove('hidden');
+        pagination.classList.add('flex');
+
+        function renderSchedulePage() {
+            const start = (currentPage - 1) * pageSize;
+            items.forEach((item, index) => {
+                item.classList.toggle('hidden', index < start || index >= start + pageSize);
+            });
+            info.textContent = `Menampilkan ${start + 1}-${Math.min(start + pageSize, items.length)} dari ${items.length} data`;
+            previous.disabled = currentPage === 1;
+            next.disabled = currentPage === totalPages;
+        }
+
+        previous.addEventListener('click', function () {
+            if (currentPage > 1) { currentPage--; renderSchedulePage(); }
+        });
+        next.addEventListener('click', function () {
+            if (currentPage < totalPages) { currentPage++; renderSchedulePage(); }
+        });
+        renderSchedulePage();
+    });
+
     // Live update digital clock in header
     function updateClock() {
         const now = new Date();

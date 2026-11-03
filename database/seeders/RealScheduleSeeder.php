@@ -82,16 +82,15 @@ class RealScheduleSeeder extends Seeder
 
         // 3. Daftar Ruang Kuliah
         $roomsData = [
-            ['kode' => 'B.45', 'nama' => 'Ruang Kelas B.45', 'gedung' => 'Gedung Kuliah Bersama FT Lt. 2', 'kapasitas' => 50, 'jenis' => 'kelas'],
-            ['kode' => 'B.44', 'nama' => 'Ruang Kelas B.44', 'gedung' => 'Gedung Kuliah Bersama FT Lt. 2', 'kapasitas' => 50, 'jenis' => 'kelas'],
-            ['kode' => 'B.43', 'nama' => 'Ruang Kelas B.43', 'gedung' => 'Gedung Kuliah Bersama FT Lt. 2', 'kapasitas' => 50, 'jenis' => 'kelas'],
-            ['kode' => 'Lab 1', 'nama' => 'Laboratorium Komputer 1', 'gedung' => 'Gedung TI Lt. 2', 'kapasitas' => 45, 'jenis' => 'laboratorium'],
-            ['kode' => 'Lab 2', 'nama' => 'Laboratorium Komputer 2', 'gedung' => 'Gedung TI Lt. 2', 'kapasitas' => 40, 'jenis' => 'laboratorium'],
+            ['kode' => 'B.45', 'nama' => 'Ruang Kelas B.45', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 50, 'jenis' => 'kelas'],
+            ['kode' => 'B.44', 'nama' => 'Ruang Kelas B.44', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 50, 'jenis' => 'kelas'],
+            ['kode' => 'B.43', 'nama' => 'Ruang Kelas B.43', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 50, 'jenis' => 'kelas'],
+            ['kode' => 'Lab 1', 'nama' => 'Laboratorium Komputer 1', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 45, 'jenis' => 'laboratorium'],
+            ['kode' => 'Lab 2', 'nama' => 'Laboratorium Komputer 2', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 40, 'jenis' => 'laboratorium'],
             ['kode' => 'Lab 3', 'nama' => 'Laboratorium Komputer 3', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 38, 'jenis' => 'laboratorium'],
-            ['kode' => 'Lab J', 'nama' => 'Lab Jaringan Komputer', 'gedung' => 'Gedung TI Lt. 1', 'kapasitas' => 35, 'jenis' => 'laboratorium'],
-            ['kode' => 'Lab M', 'nama' => 'Lab Multimedia & Grafis', 'gedung' => 'Gedung TI Lt. 3', 'kapasitas' => 35, 'jenis' => 'laboratorium'],
-            ['kode' => 'FISIP', 'nama' => 'Gedung Bersama FISIP', 'gedung' => 'Fakultas FISIP Universitas Surakarta', 'kapasitas' => 60, 'jenis' => 'kelas'],
-            ['kode' => 'w', 'nama' => 'Ruang Seminar / Workshop', 'gedung' => 'Gedung TI Lt. 1', 'kapasitas' => 40, 'jenis' => 'kelas'],
+            ['kode' => 'Lab J', 'nama' => 'Lab Jaringan Komputer', 'gedung' => 'Gedung TI Lt. 5', 'kapasitas' => 35, 'jenis' => 'laboratorium'],
+            ['kode' => 'Lab M', 'nama' => 'Lab Multimedia & Grafis', 'gedung' => 'Gedung TI Lt. 5', 'kapasitas' => 35, 'jenis' => 'laboratorium'],
+            ['kode' => 'FISIP', 'nama' => 'Gedung Bersama FISIP', 'gedung' => 'Gedung FISIP Lt. 2', 'kapasitas' => 60, 'jenis' => 'kelas'],
         ];
 
         $roomMap = [];
@@ -109,7 +108,13 @@ class RealScheduleSeeder extends Seeder
             $roomMap[$r['kode']] = $room;
             $roomMap[str_replace('.', ' ', $r['kode'])] = $room;
             $roomMap[trim($r['kode'])] = $room;
+            $roomMap[strtolower(preg_replace('/\s+/', '', trim($r['kode'])))] = $room;
         }
+
+        // PDF resmi hanya memuat ruangan di atas. Ruangan lama di luar daftar
+        // dinonaktifkan agar tidak tampil sebagai data dummy.
+        Room::whereNotIn('kode', array_column($roomsData, 'kode'))
+            ->update(['is_active' => false]);
 
         // 4. Daftar Mata Kuliah
         $coursesData = [
@@ -121,6 +126,7 @@ class RealScheduleSeeder extends Seeder
             ['kode' => '1922709', 'nama' => 'Keamanan Jaringan', 'sks' => 3, 'sem' => 7, 'tipe' => 'wajib'],
             ['kode' => '1922703', 'nama' => 'Akuntansi Dasar', 'sks' => 2, 'sem' => 5, 'tipe' => 'wajib'],
             ['kode' => '1922307', 'nama' => 'Desain Basis Data', 'sks' => 3, 'sem' => 3, 'tipe' => 'wajib'],
+            ['kode' => '1922308', 'nama' => 'Desain Basis Data', 'sks' => 3, 'sem' => 3, 'tipe' => 'wajib'],
             ['kode' => '1922305', 'nama' => 'E-commerce', 'sks' => 3, 'sem' => 3, 'tipe' => 'wajib'],
             ['kode' => '1922507', 'nama' => 'Pengujian Perangkat Lunak', 'sks' => 2, 'sem' => 7, 'tipe' => 'wajib'],
             ['kode' => '1922619', 'nama' => 'Jaringan Komputer III', 'sks' => 3, 'sem' => 7, 'tipe' => 'wajib'],
@@ -202,9 +208,20 @@ class RealScheduleSeeder extends Seeder
                 $course = Course::where('kode', $courseCode)->orWhere('nama', 'LIKE', "%$courseCode%")->first();
             }
 
-            // Normalise room key
-            $cleanRoom = trim(str_replace(' ', '', $roomCode));
-            $room = $roomMap[$roomCode] ?? $roomMap[$cleanRoom] ?? Room::where('kode', 'LIKE', "%$cleanRoom%")->first() ?? Room::first();
+            // Normalise room key. Jangan gunakan Room::first() sebagai fallback karena
+            // jadwal dapat tersimpan pada ruangan yang salah saat kode tidak cocok.
+            $room = null;
+            if ($roomCode !== null && trim((string) $roomCode) !== '') {
+                $roomCode = trim((string) $roomCode);
+                $cleanRoom = strtolower(preg_replace('/\s+/', '', $roomCode));
+                $room = $roomMap[$roomCode]
+                    ?? $roomMap[$cleanRoom]
+                    ?? Room::whereRaw("LOWER(REPLACE(kode, ' ', '')) = ?", [$cleanRoom])->first();
+
+                if (!$room) {
+                    throw new \RuntimeException("Kode ruangan '{$roomCode}' belum terdaftar di roomsData.");
+                }
+            }
 
             // Parse semester & angkatan from kelas
             $semester = 1;
@@ -228,7 +245,7 @@ class RealScheduleSeeder extends Seeder
             $schedule = Schedule::create([
                 'academic_year_id' => $academicYear->id,
                 'course_id' => $course->id,
-                'room_id' => $room->id,
+                'room_id' => $room?->id,
                 'kelas' => $kelas,
                 'shift' => $shift,
                 'angkatan' => $angkatan,
@@ -241,7 +258,9 @@ class RealScheduleSeeder extends Seeder
                 'created_by' => $adminUser->id,
             ]);
 
-            $lecturer = $lecturerMap[$lecturerKey] ?? Lecturer::where('nama', 'LIKE', "%$lecturerKey%")->first();
+            $lecturer = $lecturerKey
+                ? ($lecturerMap[$lecturerKey] ?? Lecturer::where('nama', 'LIKE', "%$lecturerKey%")->first())
+                : null;
             if ($lecturer) {
                 $schedule->lecturers()->attach($lecturer->id, ['peran' => 'koordinator', 'urutan' => 1]);
             }
@@ -269,7 +288,7 @@ class RealScheduleSeeder extends Seeder
 
         // --- SELASA (Hari = 2) ---
         $insertSchedule(2, 'pagi', '08:00', '09:40', '1 S1', 'MKWP003', 'Lab 3', 'Dr. Sukoco, S.Si., M.Si., M.Kom.');
-        $insertSchedule(2, 'pagi', '08:00', '09:40', '7 S1', '1922604', 'w', 'Muhammad Taufik Rusydi, S.Kom., M.H.');
+        $insertSchedule(2, 'pagi', '08:00', '09:40', '7 S1', '1922604', 'B.45', 'Muhammad Taufik Rusydi, S.Kom., M.H.');
         $insertSchedule(2, 'pagi', '08:00', '09:40', '5 S1', '1922603', 'Lab 2', 'Ramadhian Agus Triono S., S.Ag., S.Kom., M.M.');
         $insertSchedule(2, 'pagi', '08:00', '09:40', '3 S1', '1922304', 'Lab 1', 'Frido Oktaviandre, S.Kom., M.M.S.I');
         $insertSchedule(2, 'pagi', '09:40', '12:10', '3KelA', '1922301', 'Lab 3', 'Noor Abdul Haris, S.T., M.Kom.');
@@ -312,9 +331,9 @@ class RealScheduleSeeder extends Seeder
         $insertSchedule(4, 'pagi', '12:00', '13:40', '5 S1', '1922114', 'Lab 1', 'Dr. Sukoco, S.Si., M.Si., M.Kom.');
 
         // --- JUM'AT (Hari = 5) ---
-        $insertSchedule(5, 'pagi', '08:00', '11:00', '7 S1', '1922602', 'w', 'Dr. Sukoco, S.Si., M.Si., M.Kom.', 'Kerja Praktik');
-        $insertSchedule(5, 'pagi', '08:00', '11:00', '7 S1', '1922704', 'w', 'Dr. Abdillah Baradja, S.Kom., M.Eng.', 'KKL');
-        $insertSchedule(5, 'pagi', '13:30', '16:30', '7 S1', '1922801', 'w', 'Ir. Tri Irianto Tjendrowasono, M.T.', 'Bimbingan & Ujian Skripsi');
+        $insertSchedule(5, 'pagi', '08:00', '11:00', '7 S1', '1922602', null, null);
+        $insertSchedule(5, 'pagi', '08:00', '11:00', '7 S1', '1922704', null, null);
+        $insertSchedule(5, 'pagi', '13:30', '16:30', '7 S1', '1922801', null, null);
 
 
         // ==========================================
@@ -346,7 +365,7 @@ class RealScheduleSeeder extends Seeder
 
         // JUMAT (Hari = 5)
         $insertSchedule(5, 'sore', '16:00', '17:40', 'Smt I (Sore P1)', 'MKWP003', 'B.44', 'AB', 'Periode 1 (18 Sep - 13 Nov 2026)');
-        $insertSchedule(5, 'sore', '16:00', '18:30', 'Smt III (Sore P1)', '1922307', 'Lab 1', 'FO', 'Periode 1 (18 Sep - 13 Nov 2026)');
+        $insertSchedule(5, 'sore', '16:00', '18:30', 'Smt III (Sore P1)', '1922308', 'Lab 1', 'FO', 'Periode 1 (18 Sep - 13 Nov 2026)');
         $insertSchedule(5, 'sore', '16:00', '17:40', 'Smt V (Sore P1)', '1922505', 'B.43', 'JK', 'Periode 1 (18 Sep - 13 Nov 2026)');
         $insertSchedule(5, 'sore', '16:00', '18:30', 'Smt VII (Sore P1)', '1922707', 'Lab M', 'BM', 'Periode 1 (18 Sep - 13 Nov 2026)');
 
@@ -377,8 +396,8 @@ class RealScheduleSeeder extends Seeder
         // JUMAT (Hari = 5)
         $insertSchedule(5, 'sore', '16:00', '17:40', 'Smt I (Sore P2)', '1922110', 'B.44', 'FO', 'Periode 2 (20 Nov 2026 - 8 Jan 2027)');
         $insertSchedule(5, 'sore', '16:00', '17:40', 'Smt V (Sore P2)', '1922406', 'B.43', 'NAH', 'Periode 2 (20 Nov 2026 - 8 Jan 2027)');
-        $insertSchedule(5, 'sore', '18:00', '20:00', 'Smt V (Sore P2)', '1922602', 'w', 'SK', 'Kerja Praktik');
-        $insertSchedule(5, 'sore', '18:00', '20:00', 'Smt VII (Sore P2)', '1922704', 'w', 'AB', 'KKL');
-        $insertSchedule(5, 'sore', '18:00', '21:00', 'Smt VII (Sore P2)', '1922801', 'w', 'IT', 'Skripsi');
+        $insertSchedule(5, 'sore', '18:00', '20:00', 'Smt V (Sore P2)', '1922602', null, null);
+        $insertSchedule(5, 'sore', '18:00', '20:00', 'Smt VII (Sore P2)', '1922704', null, null);
+        $insertSchedule(5, 'sore', '18:00', '21:00', 'Smt VII (Sore P2)', '1922801', null, null);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lecturer;
 use App\Models\AcademicYear;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,11 +16,9 @@ class AuthController extends Controller
         if (!in_array($role, ['mahasiswa', 'dosen', 'admin'])) {
             $role = 'mahasiswa';
         }
-        $lecturers = Lecturer::where('is_active', true)->orderBy('nama')->get();
-        $students = User::where('role', 'mahasiswa')->where('is_active', true)->orderBy('username')->get();
         $activeYear = AcademicYear::resolve();
         
-        return view('auth.login', compact('role', 'lecturers', 'students', 'activeYear'));
+        return view('auth.login', compact('role', 'activeYear'));
     }
 
     public function login(Request $request)

@@ -7,7 +7,6 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
             <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FEF2F2] text-[#EF4444]">Panel Administrator</span>
                 <h1 class="text-xl sm:text-2xl font-bold text-[#161A30]">Kelola Data Dosen Pengajar</h1>
             </div>
             <p class="text-xs sm:text-sm text-[#8A94A6] mt-1">
@@ -63,8 +62,11 @@
                         <tr class="hover:bg-[#FBFBFC] transition-colors">
                             <td class="py-4 px-4">
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ $l->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" 
-                                         alt="Avatar" class="w-10 h-10 rounded-full object-cover ring-2 ring-[#5B50E5]/20 shrink-0">
+                                    @if($l->foto)
+                                        <img src="{{ asset('storage/' . $l->foto) }}" alt="Foto {{ $l->nama }}" class="w-10 h-10 rounded-full object-cover ring-2 ring-[#5B50E5]/20 shrink-0">
+                                    @else
+                                        <span class="w-10 h-10 rounded-full bg-[#F4F5F9] text-[#5B50E5] flex items-center justify-center font-bold shrink-0">{{ strtoupper(substr($l->nama, 0, 1)) }}</span>
+                                    @endif
                                     <div>
                                         <div class="font-bold text-[#161A30] text-[13px]">{{ $l->nama }}</div>
                                         <div class="text-[11px] text-[#8A94A6]">Gelar: {{ $l->gelar ?? '-' }}</div>
@@ -127,7 +129,7 @@
             <button type="button" onclick="closeModal()" class="w-8 h-8 rounded-full bg-[#F4F5F9] hover:bg-[#E5E7EB] text-[#464555] flex items-center justify-center">✕</button>
         </div>
 
-        <form id="lecturerForm" method="POST" action="{{ route('admin.lecturers.store') }}" class="space-y-4">
+        <form id="lecturerForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.lecturers.store') }}" class="space-y-4">
             @csrf
             <div id="methodField"></div>
 
@@ -158,8 +160,8 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-[#161A30] mb-1">URL Foto Profil (Opsional)</label>
-                <input type="text" name="foto" id="foto" placeholder="https://..." class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
+                <label class="block text-xs font-bold text-[#161A30] mb-1">Foto Profil <span class="font-normal text-[#8A94A6]">(Opsional, JPG/PNG/WebP maksimal 2 MB)</span></label>
+                <input type="file" name="foto" id="foto" accept="image/jpeg,image/png,image/webp" class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#F1F3F7]">
@@ -195,7 +197,7 @@
         document.getElementById('nama').value = l.nama;
         document.getElementById('email').value = l.email || '';
         document.getElementById('laboratorium').value = l.laboratorium || '';
-        document.getElementById('foto').value = l.foto || '';
+        document.getElementById('foto').value = '';
 
         modal.classList.remove('hidden');
     }

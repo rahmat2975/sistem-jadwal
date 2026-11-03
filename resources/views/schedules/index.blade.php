@@ -12,10 +12,6 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse"></span>
                     {{ ucfirst($activeYear->semester ?? 'ganjil') }} · {{ $activeYear->tahun ?? '2026/2027' }}
                 </span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EEF2FF] text-[#4F46E5] text-xs font-semibold">
-                    <span class="material-symbols-outlined text-[15px]">schedule</span>
-                    WIB (UTC+7)
-                </span>
             </div>
             <p class="text-xs sm:text-sm text-[#8A94A6]">
                 Departemen Teknik Informatika · Fakultas Teknik
@@ -24,11 +20,6 @@
 
         <!-- Action Buttons -->
         <div class="flex flex-wrap items-center gap-2.5">
-            <button onclick="window.print()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white text-[#464555] hover:text-[#161A30] hover:bg-[#F9FAFC] text-xs font-bold border border-[#E5E7EB] shadow-sm transition-all" type="button">
-                <span class="material-symbols-outlined text-[18px]">print</span>
-                <span>Cetak Jadwal Mingguan</span>
-            </button>
-
             <div class="relative inline-block text-left" id="exportDropdownWrapper">
                 <button class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5B50E5] text-white text-xs font-bold shadow-md shadow-[#5B50E5]/25 hover:bg-[#4F46E5] transition-all" id="btnExportToggle" type="button">
                     <span class="material-symbols-outlined text-[18px]">file_download</span>
@@ -36,10 +27,14 @@
                     <span class="material-symbols-outlined text-[16px]">expand_more</span>
                 </button>
                 <div class="hidden absolute right-0 mt-2 w-52 rounded-2xl bg-white shadow-xl border border-[#E5E7EB] p-2 z-30 flex flex-col gap-1" id="exportMenu">
-                    <button onclick="window.print()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[#161A30] hover:bg-[#F4F2FF] text-xs font-medium transition-colors">
+                    <a id="officialPdfExportPagi" href="{{ route('jadwal.cetak', array_merge(request()->query(), ['shift' => 'pagi'])) }}" target="_blank" rel="noopener" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[#161A30] hover:bg-[#F4F2FF] text-xs font-medium transition-colors">
                         <span class="material-symbols-outlined text-[18px] text-[#EF4444]">picture_as_pdf</span>
-                        <span>Dokumen PDF (.pdf)</span>
-                    </button>
+                        <span>PDF Jadwal Kelas Pagi</span>
+                    </a>
+                    <a id="officialPdfExportSore" href="{{ route('jadwal.cetak', array_merge(request()->query(), ['shift' => 'sore'])) }}" target="_blank" rel="noopener" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[#161A30] hover:bg-[#F4F2FF] text-xs font-medium transition-colors">
+                        <span class="material-symbols-outlined text-[18px] text-[#6366F1]">picture_as_pdf</span>
+                        <span>PDF Jadwal Kelas Sore</span>
+                    </a>
                     <button onclick="exportSchedulesCSV()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-[#161A30] hover:bg-[#F4F2FF] text-xs font-medium transition-colors">
                         <span class="material-symbols-outlined text-[18px] text-[#059669]">table_view</span>
                         <span>Lembar Kerja Excel (.csv)</span>
@@ -56,10 +51,6 @@
             <div class="flex flex-col">
                 <span class="text-xs font-bold text-[#8A94A6] uppercase tracking-wider">Total Jadwal Aktif</span>
                 <span class="text-2xl font-extrabold text-[#161A30] mt-1 leading-none">{{ $totalSchedules }}</span>
-                <span class="text-xs font-semibold text-[#059669] mt-1.5 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[15px]">check_circle</span>
-                    100% Terverifikasi Jurusan
-                </span>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined text-[24px]">calendar_month</span>
@@ -97,10 +88,6 @@
                 <span class="text-2xl font-extrabold text-[#161A30] mt-1 leading-none">
                     {{ $totalPagi }} <span class="text-xs font-medium text-[#8A94A6]">Pagi</span> / {{ $totalSore }} <span class="text-xs font-medium text-[#8A94A6]">Sore</span>
                 </span>
-                <span class="text-xs font-semibold text-[#059669] mt-1.5 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[15px]">verified</span>
-                    Algoritma Bebas Tabrakan
-                </span>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center flex-shrink-0">
                 <span class="material-symbols-outlined text-[24px]">event_available</span>
@@ -110,24 +97,16 @@
 
     <!-- 3. INTERACTIVE CONTROL & FILTER PANEL -->
     <div class="p-5 rounded-3xl bg-white shadow-sm border border-[#E5E7EB]/80 mb-6 flex flex-col gap-4">
-        <!-- Row 1: Semester Tabs & View Toggle -->
+        <!-- Row 1: Period & View -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <form method="GET" action="{{ route('jadwal.semua') }}" class="flex items-center gap-2">
-                <label for="academic_year_id" class="text-xs font-bold text-[#8A94A6]">Periode:</label>
-                <select id="academic_year_id" name="academic_year_id" onchange="this.form.submit()" class="bg-white border border-[#E5E7EB] text-[#161A30] px-3 py-2 rounded-xl text-xs outline-none">
+            <form method="GET" action="{{ route('jadwal.semua') }}" class="flex flex-col sm:flex-row sm:items-center gap-2.5">
+                <label for="academic_year_id" class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Periode Akademik</label>
+                <select id="academic_year_id" name="academic_year_id" onchange="this.form.submit()" class="min-w-[190px] bg-white border border-[#E5E7EB] text-[#161A30] px-3 py-2.5 rounded-xl text-xs font-semibold outline-none focus:border-[#5B50E5] focus:ring-2 focus:ring-[#5B50E5]/10">
                     @foreach($academicYears as $year)
-                        <option value="{{ $year->id }}" {{ $activeYear?->id === $year->id ? 'selected' : '' }}>{{ $year->tahun }} · {{ ucfirst($year->semester) }}</option>
+                        <option value="{{ $year->id }}" {{ $activeYear?->id === $year->id ? 'selected' : '' }}>{{ $year->tahun }} — {{ ucfirst($year->semester) }}</option>
                     @endforeach
                 </select>
             </form>
-            <div class="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-[#F4F5F9]">
-                <button class="semester-filter-btn active-tab px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#5B50E5] text-white shadow-sm transition-all" data-semester="all" type="button">Semua Semester</button>
-                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="1" type="button">Semester 1</button>
-                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="3" type="button">Semester 3</button>
-                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="5" type="button">Semester 5</button>
-                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="7" type="button">Semester 7</button>
-                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="pilihan" type="button">MK Pilihan</button>
-            </div>
 
             <!-- View Switcher -->
             <div class="flex items-center gap-1 p-1 rounded-2xl bg-[#F4F5F9] self-start lg:self-auto">
@@ -142,19 +121,31 @@
             </div>
         </div>
 
-        <!-- Row 2: Search, Room Dropdown, Reset -->
+        <!-- Row 2: Semester Filter -->
+        <div class="flex flex-col gap-2 pt-3 border-t border-[#F1F3F7]">
+            <span class="text-[11px] font-bold text-[#8A94A6] uppercase tracking-wider">Semester</span>
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button class="semester-filter-btn active-tab px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#5B50E5] text-white shadow-sm transition-all" data-semester="all" type="button">Semua</button>
+                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="1" type="button">Semester 1</button>
+                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="3" type="button">Semester 3</button>
+                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="5" type="button">Semester 5</button>
+                <button class="semester-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#161A30] transition-all" data-semester="7" type="button">Semester 7 & Pilihan</button>
+            </div>
+        </div>
+
+        <!-- Row 3: Search, Room Dropdown, Reset -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 pt-1">
             <!-- Search Input -->
             <div class="md:col-span-5 relative flex items-center">
                 <span class="material-symbols-outlined absolute left-3.5 text-[#8A94A6] text-[18px] pointer-events-none">search</span>
-                <input class="w-full bg-[#F4F5F9] text-[#161A30] placeholder:text-[#8A94A6] pl-10 pr-4 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20 transition-all" id="searchInput" placeholder="Cari nama mata kuliah, kode MK, dosen, atau kelas..." type="text"/>
+                <input class="w-full bg-[#F4F5F9] text-[#161A30] placeholder:text-[#8A94A6] pl-10 pr-4 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20 transition-all" id="searchInput" placeholder="Cari mata kuliah, kode, dosen, atau kelas" type="text"/>
             </div>
 
             <!-- Room Dropdown -->
             <div class="md:col-span-4 relative flex items-center">
                 <span class="material-symbols-outlined absolute left-3.5 text-[#8A94A6] text-[18px] pointer-events-none">meeting_room</span>
                 <select class="w-full bg-[#F4F5F9] text-[#161A30] pl-10 pr-8 py-2.5 rounded-xl text-xs outline-none appearance-none cursor-pointer focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20 transition-all" id="roomFilterSelect">
-                    <option value="all">Semua Ruangan Kuliah & Lab</option>
+                    <option value="all">Semua Ruangan</option>
                     @foreach($rooms as $r)
                         <option value="{{ $r->nama }}">{{ $r->nama }}</option>
                     @endforeach
@@ -172,7 +163,7 @@
             </div>
         </div>
 
-        <!-- Row 3: SHIFT FILTER & DAY PILLS -->
+        <!-- Row 4: Shift & Day Filters -->
         <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#F1F3F7]">
             <!-- Shift Filter Pills -->
             <div class="flex flex-wrap items-center gap-1.5">
@@ -228,9 +219,9 @@
                                 $otherLecturers = $sched->lecturers->where('id', '!=', $coordinator?->id);
                                 $detail = $sched->status_detail;
                                 $isPilihan = $course?->tipe === 'pilihan';
-                                $semesterTag = $isPilihan ? 'pilihan' : $sched->semester;
+                                $semesterTag = $isPilihan ? 'pilihan' : ($sched->display_semester ?? $sched->semester);
                                 $dayName = $days[$sched->hari] ?? 'Senin';
-                                $searchKeywords = strtolower("{$course?->nama} {$course?->kode} {$sched->kelas} {$coordinator?->nama} {$room?->nama} {$sched->shift} {$dayName}");
+                                $searchKeywords = strtolower("{$sched->display_course_name} {$course?->kode} {$sched->kelas} {$coordinator?->nama} {$room?->nama} {$sched->shift} {$dayName}");
                                 $lecturersList = $sched->lecturers->pluck('nama')->implode(', ');
                             @endphp
                             <tr class="schedule-row hover:bg-[#FBFBFC] transition-colors {{ $detail['badge'] === 'active' ? 'bg-[#EEF2FF]/30' : '' }}" 
@@ -239,15 +230,15 @@
                                 data-semester="{{ $semesterTag }}" 
                                 data-room="{{ $room?->nama }}" 
                                 data-keyword="{{ $searchKeywords }}"
-                                data-course="{{ $course?->nama }}"
+                                data-course="{{ $sched->display_course_name }}"
                                 data-code="{{ $course?->kode }}"
-                                data-sks="{{ $course?->sks }}"
+                                data-sks="{{ $sched->display_sks }}"
                                 data-kelas="{{ $sched->kelas }}"
-                                data-semester-num="{{ $sched->semester }}"
+                                data-semester-num="{{ $sched->display_semester ?? $sched->semester }}"
                                 data-time="{{ substr($sched->jam_mulai, 0, 5) }} - {{ substr($sched->jam_selesai, 0, 5) }}"
                                 data-lecturer="{{ $coordinator?->nama }}"
                                 data-lecturers="{{ $lecturersList }}"
-                                data-lecturer-foto="{{ $coordinator?->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}"
+                                data-lecturer-foto="{{ $coordinator?->foto ? asset('storage/' . $coordinator->foto) : '' }}"
                                 data-room-name="{{ $room?->nama ?? 'Ruang Belum Ditentukan' }}"
                                 data-room-building="{{ $room?->gedung ?? 'Gedung TI' }}">
                                 
@@ -282,8 +273,8 @@
                                 <td class="py-4 px-4">
                                     <div class="flex flex-col">
                                         <div class="flex flex-wrap items-center gap-1.5">
-                                            <span class="text-xs font-bold text-[#161A30]">{{ $course?->nama }}</span>
-                                            <span class="px-2 py-0.5 rounded-full bg-[#EEF2FF] text-[#4F46E5] text-xs font-bold">{{ $course?->sks }} SKS</span>
+                                            <span class="text-xs font-bold text-[#161A30]">{{ $sched->display_course_name }}</span>
+                                            <span class="px-2 py-0.5 rounded-full bg-[#EEF2FF] text-[#4F46E5] text-xs font-bold">{{ $sched->display_sks }} SKS</span>
                                             <span class="px-2 py-0.5 rounded-full {{ $isPilihan ? 'bg-[#ECFDF5] text-[#059669]' : 'bg-[#F1F3F7] text-[#64748B]' }} text-xs font-bold">
                                                 {{ ucfirst($course?->tipe) }}
                                             </span>
@@ -299,7 +290,7 @@
                                     <div class="flex flex-col">
                                         <span class="text-xs font-bold text-[#161A30]">{{ $sched->kelas }}</span>
                                         <span class="text-xs text-[#8A94A6]">
-                                            Semester {{ $sched->semester }} · {{ $sched->jumlah_mahasiswa ?? 40 }} Mahasiswa
+                                            Semester {{ $sched->display_semester ?? $sched->semester }}
                                         </span>
                                     </div>
                                 </td>
@@ -320,9 +311,11 @@
                                 <!-- Dosen Pengampu -->
                                 <td class="py-4 px-4">
                                     <div class="flex items-center gap-2.5">
-                                        <img src="{{ $coordinator?->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" 
-                                             alt="Avatar" 
-                                             class="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-[#5B50E5]/20">
+                                        @if($coordinator?->foto)
+                                            <img src="{{ asset('storage/' . $coordinator->foto) }}" alt="{{ $coordinator->nama }}" class="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-[#5B50E5]/20">
+                                        @else
+                                            <span class="w-8 h-8 rounded-full bg-[#F4F5F9] text-[#5B50E5] flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-[#5B50E5]/20">{{ $coordinator ? strtoupper(substr($coordinator->nama, 0, 1)) : '?' }}</span>
+                                        @endif
                                         <div class="flex flex-col">
                                             <span class="text-xs font-bold text-[#161A30] leading-tight">
                                                 {{ $coordinator?->nama }} <span class="text-[#5B50E5] font-semibold">(Koor)</span>
@@ -331,8 +324,6 @@
                                                 <span class="text-xs text-[#8A94A6] truncate max-w-[200px]" title="{{ $otherLecturers->pluck('nama')->implode(', ') }}">
                                                     +{{ $otherLecturers->count() }} dosen: {{ $otherLecturers->pluck('nama')->first() }}
                                                 </span>
-                                            @else
-                                                <span class="text-xs text-[#8A94A6]">Dosen Tunggal Pengampu</span>
                                             @endif
                                         </div>
                                     </div>
@@ -408,24 +399,24 @@
                     $detail = $sched->status_detail;
                     $isPagi = $sched->shift === 'pagi';
                     $dayName = $days[$sched->hari] ?? 'Senin';
-                    $searchKeywords = strtolower("{$course?->nama} {$course?->kode} {$sched->kelas} {$coordinator?->nama} {$room?->nama} {$sched->shift} {$dayName}");
+                    $searchKeywords = strtolower("{$sched->display_course_name} {$course?->kode} {$sched->kelas} {$coordinator?->nama} {$room?->nama} {$sched->shift} {$dayName}");
                     $lecturersList = $sched->lecturers->pluck('nama')->implode(', ');
                 @endphp
                 <div class="schedule-card-item p-4 rounded-3xl bg-white shadow-sm border border-[#E5E7EB]/80 {{ $detail['badge'] === 'active' ? 'border-l-4 border-l-[#5B50E5] shadow-md' : '' }} flex flex-col justify-between gap-3 hover:shadow-md transition-all"
                      data-day="{{ $dayName }}" 
                      data-shift="{{ $sched->shift }}"
-                     data-semester="{{ $course?->tipe === 'pilihan' ? 'pilihan' : $sched->semester }}" 
+                     data-semester="{{ $course?->tipe === 'pilihan' ? 'pilihan' : ($sched->display_semester ?? $sched->semester) }}" 
                      data-room="{{ $room?->nama }}" 
                      data-keyword="{{ $searchKeywords }}"
-                     data-course="{{ $course?->nama }}"
+                     data-course="{{ $sched->display_course_name }}"
                      data-code="{{ $course?->kode }}"
-                     data-sks="{{ $course?->sks }}"
+                     data-sks="{{ $sched->display_sks }}"
                      data-kelas="{{ $sched->kelas }}"
-                     data-semester-num="{{ $sched->semester }}"
+                     data-semester-num="{{ $sched->display_semester ?? $sched->semester }}"
                      data-time="{{ substr($sched->jam_mulai, 0, 5) }} - {{ substr($sched->jam_selesai, 0, 5) }}"
                      data-lecturer="{{ $coordinator?->nama }}"
                      data-lecturers="{{ $lecturersList }}"
-                     data-lecturer-foto="{{ $coordinator?->foto ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}"
+                     data-lecturer-foto="{{ $coordinator?->foto ? asset('storage/' . $coordinator->foto) : '' }}"
                      data-room-name="{{ $room?->nama ?? 'Ruang Belum Ditentukan' }}"
                      data-room-building="{{ $room?->gedung ?? 'Gedung TI' }}">
                     
@@ -441,8 +432,8 @@
 
                         <!-- Course Title -->
                         <div>
-                            <h3 class="text-xs font-bold text-[#161A30] leading-snug line-clamp-1">{{ $course?->nama }}</h3>
-                            <p class="text-xs text-[#8A94A6] mt-0.5">{{ $sched->kelas }} · Smt {{ $sched->semester }} · {{ $course?->sks }} SKS</p>
+                            <h3 class="text-xs font-bold text-[#161A30] leading-snug line-clamp-1">{{ $sched->display_course_name }}</h3>
+                            <p class="text-xs text-[#8A94A6] mt-0.5">{{ $sched->kelas }} · Semester {{ $sched->display_semester ?? $sched->semester }} · {{ $sched->display_sks }} SKS</p>
                         </div>
 
                         <!-- Room & Lecturer -->
@@ -730,13 +721,35 @@ document.addEventListener('DOMContentLoaded', function () {
         const rowRoom = element.getAttribute('data-room');
         const rowKeywords = (element.getAttribute('data-keyword') || '').toLowerCase();
 
-        const matchSemester = (currentSemester === 'all') || (rowSemester === currentSemester);
+        const matchSemester = (currentSemester === 'all')
+            || (currentSemester === '7' && (rowSemester === '7' || rowSemester === 'pilihan'))
+            || (currentSemester !== '7' && rowSemester === currentSemester);
         const matchShift = (currentShift === 'all') || (rowShift === currentShift);
         const matchDay = (currentDay === 'all') || (rowDay === currentDay);
         const matchRoom = (currentRoom === 'all') || (rowRoom && rowRoom.toLowerCase().includes(currentRoom.toLowerCase()));
         const matchSearch = !searchQuery || rowKeywords.includes(searchQuery.toLowerCase());
 
         return matchSemester && matchShift && matchDay && matchRoom && matchSearch;
+    }
+
+    function updateOfficialPdfHref() {
+        const pagiLink = document.getElementById('officialPdfExportPagi');
+        const soreLink = document.getElementById('officialPdfExportSore');
+        if (!pagiLink || !soreLink) return;
+
+        [
+            [pagiLink, 'pagi'],
+            [soreLink, 'sore'],
+        ].forEach(([link, shift]) => {
+            const url = new URL(link.href, window.location.origin);
+            const params = url.searchParams;
+            params.set('shift', shift);
+            currentSemester === 'all' ? params.delete('semester') : params.set('semester', currentSemester);
+            currentDay === 'all' ? params.delete('hari') : params.set('hari', currentDay === 'Senin' ? '1' : currentDay === 'Selasa' ? '2' : currentDay === 'Rabu' ? '3' : currentDay === 'Kamis' ? '4' : currentDay === 'Jumat' ? '5' : currentDay);
+            currentRoom === 'all' ? params.delete('room') : params.set('room', currentRoom);
+            searchQuery ? params.set('q', searchQuery) : params.delete('q');
+            link.href = url.toString();
+        });
     }
 
     function renderPaginationControls(container, currentPage, totalPages, onPageChange) {
@@ -872,6 +885,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tableCurrentPage = 1;
             gridCurrentPage = 1;
             updatePagination();
+            updateOfficialPdfHref();
         });
     });
 
@@ -886,6 +900,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tableCurrentPage = 1;
             gridCurrentPage = 1;
             updatePagination();
+            updateOfficialPdfHref();
         });
     });
 
@@ -900,6 +915,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tableCurrentPage = 1;
             gridCurrentPage = 1;
             updatePagination();
+            updateOfficialPdfHref();
         });
     });
 
@@ -910,6 +926,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tableCurrentPage = 1;
             gridCurrentPage = 1;
             updatePagination();
+            updateOfficialPdfHref();
         });
     }
 
@@ -920,6 +937,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tableCurrentPage = 1;
             gridCurrentPage = 1;
             updatePagination();
+            updateOfficialPdfHref();
         });
     }
 
@@ -962,11 +980,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             updatePagination();
+            updateOfficialPdfHref();
         });
     }
 
     // Initialize Pagination
     updatePagination();
+    updateOfficialPdfHref();
 });
 </script>
 @endpush

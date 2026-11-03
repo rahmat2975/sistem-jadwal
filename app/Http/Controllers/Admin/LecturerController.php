@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LecturerController extends Controller
@@ -36,7 +37,7 @@ class LecturerController extends Controller
             'gelar' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:150',
             'laboratorium' => 'nullable|string|max:100',
-            'foto' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         // Automatically create login user account for lecturer.
@@ -51,6 +52,9 @@ class LecturerController extends Controller
             'must_change_password' => true,
         ]);
 
+        $validated['foto'] = $request->hasFile('foto')
+            ? $request->file('foto')->store('profile-photos', 'public')
+            : null;
         $validated['user_id'] = $user->id;
         Lecturer::create($validated);
 
@@ -67,8 +71,17 @@ class LecturerController extends Controller
             'gelar' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:150',
             'laboratorium' => 'nullable|string|max:100',
-            'foto' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        if ($request->hasFile('foto')) {
+            if ($lecturer->foto) {
+                Storage::disk('public')->delete($lecturer->foto);
+            }
+            $validated['foto'] = $request->file('foto')->store('profile-photos', 'public');
+        } else {
+            unset($validated['foto']);
+        }
 
         $lecturer->update($validated);
 

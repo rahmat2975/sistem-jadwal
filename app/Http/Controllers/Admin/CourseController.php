@@ -24,6 +24,10 @@ class CourseController extends Controller
             $query->where('tipe', $request->tipe);
         }
 
+        if ($request->filled('semester') && in_array((int) $request->semester, range(1, 8), true)) {
+            $query->where('semester_ideal', (int) $request->semester);
+        }
+
         $courses = $query->orderBy('semester_ideal')->orderBy('kode')->paginate(10)->withQueryString();
 
         return view('admin.courses.index', compact('courses'));
@@ -36,11 +40,17 @@ class CourseController extends Controller
             'nama' => 'required|string|max:150',
             'singkatan' => 'nullable|string|max:10',
             'tipe' => 'required|in:wajib,pilihan',
-            'sks' => 'required|integer|between:1,6',
+            'sks_teori' => 'required|integer|between:0,6',
+            'sks_praktikum' => 'required|integer|between:0,6',
             'semester_ideal' => 'nullable|integer|between:1,8',
             'kategori' => 'nullable|string|max:100',
-            'deskripsi' => 'nullable|string',
         ]);
+
+        $totalSks = (int) $validated['sks_teori'] + (int) $validated['sks_praktikum'];
+        if ($totalSks < 1 || $totalSks > 6) {
+            return back()->withErrors(['sks_teori' => 'Total SKS teori dan praktikum harus antara 1 sampai 6.'])->withInput();
+        }
+        $validated['sks'] = $totalSks;
 
         Course::create($validated);
 
@@ -56,11 +66,17 @@ class CourseController extends Controller
             'nama' => 'required|string|max:150',
             'singkatan' => 'nullable|string|max:10',
             'tipe' => 'required|in:wajib,pilihan',
-            'sks' => 'required|integer|between:1,6',
+            'sks_teori' => 'required|integer|between:0,6',
+            'sks_praktikum' => 'required|integer|between:0,6',
             'semester_ideal' => 'nullable|integer|between:1,8',
             'kategori' => 'nullable|string|max:100',
-            'deskripsi' => 'nullable|string',
         ]);
+
+        $totalSks = (int) $validated['sks_teori'] + (int) $validated['sks_praktikum'];
+        if ($totalSks < 1 || $totalSks > 6) {
+            return back()->withErrors(['sks_teori' => 'Total SKS teori dan praktikum harus antara 1 sampai 6.'])->withInput();
+        }
+        $validated['sks'] = $totalSks;
 
         $course->update($validated);
 

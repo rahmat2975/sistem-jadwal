@@ -17,14 +17,19 @@ class Course extends Model
         'singkatan',
         'tipe',
         'sks',
+        'sks_teori',
+        'sks_praktikum',
         'semester_ideal',
         'kategori',
+        'kelompok_peminatan',
         'deskripsi',
         'is_active',
     ];
 
     protected $casts = [
         'sks' => 'integer',
+        'sks_teori' => 'integer',
+        'sks_praktikum' => 'integer',
         'semester_ideal' => 'integer',
         'is_active' => 'boolean',
     ];

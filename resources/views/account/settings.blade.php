@@ -33,6 +33,19 @@
             </div>
             <button type="submit" class="w-full rounded-xl bg-[#5B50E5] hover:bg-[#4233cc] text-white font-bold text-sm py-3">Simpan Password</button>
         </form>
+
+        @if(auth()->user()->isAdmin())
+            <div class="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFC] px-4 py-3">
+                <div class="min-w-0">
+                    <p class="text-xs font-bold text-[#161A30]">Tidak ingat password admin?</p>
+                    <p class="mt-0.5 text-[11px] text-[#8A94A6]">Kirim tautan reset ke email akun administrator.</p>
+                </div>
+                <a href="{{ route('password.request', ['role' => 'admin']) }}" class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[#FEF2F2] px-3 py-2 text-xs font-bold text-[#EF4444] transition hover:bg-[#FEE2E2]">
+                    <span class="material-symbols-outlined text-[16px]">lock_reset</span>
+                    Lupa Password
+                </a>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

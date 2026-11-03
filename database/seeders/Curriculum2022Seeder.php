@@ -1075,26 +1075,6 @@ class Curriculum2022Seeder extends Seeder
                 'deskripsi' => 'Simulasi perancangan infrastruktur jaringan skala enterprise menggunakan Cisco Packet Tracer dan GNS3 di lab.'
             ],
             [
-                'kode' => '1922620A',
-                'nama' => 'Jaringan Komputer II',
-                'singkatan' => 'JK2',
-                'sks' => 2,
-                'sem' => 6,
-                'tipe' => 'pilihan',
-                'kategori' => 'Peminatan Jaringan Komputer',
-                'deskripsi' => 'Routing dinamis (OSPF, EIGRP, BGP), Virtual LAN (VLAN), Spanning Tree Protocol (STP), dan Access Control List (ACL).'
-            ],
-            [
-                'kode' => '1922621A',
-                'nama' => 'Praktikum Jaringan Komputer II',
-                'singkatan' => 'PJK2',
-                'sks' => 1,
-                'sem' => 6,
-                'tipe' => 'pilihan',
-                'kategori' => 'Peminatan Jaringan Komputer',
-                'deskripsi' => 'Konfigurasi router dan switch Cisco riil pada rack laboratorium, setup inter-VLAN routing dan OSPF di lab.'
-            ],
-            [
                 'kode' => '1922617',
                 'nama' => 'Teknologi Sistem Operasi',
                 'singkatan' => 'TSO',
@@ -1123,26 +1103,6 @@ class Curriculum2022Seeder extends Seeder
                 'tipe' => 'pilihan',
                 'kategori' => 'Peminatan Jaringan Komputer',
                 'deskripsi' => 'Model layanan cloud (IaaS, PaaS, SaaS), virtualisasi hypervisor, containerization Docker, dan orkestrasi Kubernetes.'
-            ],
-            [
-                'kode' => '1922620B',
-                'nama' => 'Praktikum Cloud Computing',
-                'singkatan' => 'PCLOUD',
-                'sks' => 1,
-                'sem' => 7,
-                'tipe' => 'pilihan',
-                'kategori' => 'Peminatan Jaringan Komputer',
-                'deskripsi' => 'Deploy container Docker, konfigurasi cluster virtual machine, dan manajemen cloud instance (AWS/GCP/Proxmox) di lab.'
-            ],
-            [
-                'kode' => '1922621B',
-                'nama' => 'Pemrograman Client Server',
-                'singkatan' => 'PCS',
-                'sks' => 2,
-                'sem' => 7,
-                'tipe' => 'pilihan',
-                'kategori' => 'Peminatan Jaringan Komputer',
-                'deskripsi' => 'Arsitektur client-server, socket programming TCP/UDP, remote procedure call (RPC), dan komunikasi pesan real-time.'
             ],
             [
                 'kode' => '1922622',
@@ -1189,11 +1149,9 @@ class Curriculum2022Seeder extends Seeder
             'MKWP004'   => '1922202', // Teknisi Komputer
             'MKWP005'   => '1922504', // Kalkulus
             'MKWP006'   => '1922517', // Komunikasi Data
-            '1922621'   => '1922621B', // Pemrograman Client Server (Official Peminatan)
             'EEA66053'  => '1922510', // Pemrograman Web II
             'EEA64022'  => '1922207', // Rekayasa Perangkat Lunak
             'EEA68099'  => '1922609', // Kecerdasan Buatan II
-            'EEA65014'  => '1922620A', // Jaringan Komputer II
             'EEA62011'  => '1922301', // Struktur Data
             'EEA67041'  => '1922209', // Basis Data
             'EEA66034'  => '1922617', // Teknologi Sistem Operasi

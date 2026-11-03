@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -42,15 +43,17 @@ class UserController extends Controller
             'username' => 'required|string|max:50|unique:users,username',
             'name' => 'required|string|max:150',
             'email' => 'required|email|max:150|unique:users,email',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'password' => 'required|string|min:8|confirmed',
             'lecturer_id' => ['nullable', 'required_if:role,dosen', Rule::exists('lecturers', 'id')->where('is_active', true)->whereNull('user_id')],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated, $request) {
             $user = User::create([
                 'username' => $validated['username'],
                 'name' => $validated['name'],
                 'email' => $validated['email'] ?? null,
+                'foto' => $request->hasFile('foto') ? $request->file('foto')->store('profile-photos', 'public') : null,
                 'password' => Hash::make($validated['password']),
                 'role' => $validated['role'],
                 'is_active' => true,
@@ -73,6 +76,7 @@ class UserController extends Controller
             'username' => 'required|string|max:50|unique:users,username,' . $user->id,
             'name' => 'required|string|max:150',
             'email' => 'required|email|max:150|unique:users,email,' . $user->id,
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'password' => 'nullable|string|min:8|confirmed',
             'is_active' => 'required|boolean',
         ]);
@@ -89,6 +93,13 @@ class UserController extends Controller
             $data['must_change_password'] = false;
         }
 
+        if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('profile-photos', 'public');
+        }
+
         $user->update($data);
 
         return redirect()->route('admin.users.index')->with('success', 'Akun berhasil diperbarui.');
@@ -97,8 +108,13 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::whereIn('role', ['mahasiswa', 'dosen'])->findOrFail($id);
-        $user->update(['is_active' => false]);
 
-        return redirect()->route('admin.users.index')->with('success', 'Akun berhasil dinonaktifkan.');
+        if ($user->foto) {
+            Storage::disk('public')->delete($user->foto);
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'Akun berhasil dihapus.');
     }
 }

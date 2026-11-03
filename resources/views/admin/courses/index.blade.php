@@ -7,7 +7,6 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
             <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FEF2F2] text-[#EF4444]">Panel Administrator</span>
                 <h1 class="text-xl sm:text-2xl font-bold text-[#161A30]">Kelola Mata Kuliah</h1>
             </div>
             <p class="text-xs sm:text-sm text-[#8A94A6] mt-1">
@@ -37,6 +36,13 @@
                 <option value="pilihan" {{ request('tipe') === 'pilihan' ? 'selected' : '' }}>Pilihan</option>
             </select>
 
+            <select name="semester" onchange="this.form.submit()" class="bg-[#F4F5F9] text-[#161A30] px-3 py-2 rounded-xl text-xs outline-none cursor-pointer">
+                <option value="">Semua Semester</option>
+                @for($semester = 1; $semester <= 8; $semester++)
+                    <option value="{{ $semester }}" @selected((string) request('semester') === (string) $semester)>Semester {{ $semester }}</option>
+                @endfor
+            </select>
+
             <button type="submit" class="px-3 py-2 rounded-xl bg-[#5B50E5] text-white text-xs font-bold hover:bg-[#4F46E5]">
                 Cari
             </button>
@@ -59,7 +65,8 @@
                         <th class="py-3.5 px-4">KODE MK</th>
                         <th class="py-3.5 px-4">NAMA MATA KULIAH</th>
                         <th class="py-3.5 px-4">TIPE</th>
-                        <th class="py-3.5 px-4">BOBOT SKS</th>
+                        <th class="py-3.5 px-4">SKS TEORI</th>
+                        <th class="py-3.5 px-4">SKS PRAKTIKUM</th>
                         <th class="py-3.5 px-4">SEMESTER IDEAL</th>
                         <th class="py-3.5 px-4">KATEGORI / LAB</th>
                         <th class="py-3.5 px-4 text-right">AKSI</th>
@@ -73,7 +80,6 @@
                             </td>
                             <td class="py-4 px-4">
                                 <div class="font-bold text-[#161A30] text-[13px]">{{ $c->nama }}</div>
-                                <div class="text-[11px] text-[#8A94A6]">{{ $c->deskripsi }}</div>
                             </td>
                             <td class="py-4 px-4 whitespace-nowrap">
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $c->tipe === 'wajib' ? 'bg-[#EEF2FF] text-[#4F46E5]' : 'bg-[#ECFDF5] text-[#059669]' }}">
@@ -81,7 +87,10 @@
                                 </span>
                             </td>
                             <td class="py-4 px-4 font-bold text-[#161A30]">
-                                {{ $c->sks }} SKS
+                                {{ $c->sks_teori }} SKS
+                            </td>
+                            <td class="py-4 px-4 font-bold text-[#161A30]">
+                                {{ $c->sks_praktikum }} SKS
                             </td>
                             <td class="py-4 px-4 text-[#464555]">
                                 Semester {{ $c->semester_ideal ?? '-' }}
@@ -107,7 +116,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-[#8A94A6] text-xs">
+                            <td colspan="8" class="py-8 text-center text-[#8A94A6] text-xs">
                                 Belum ada data mata kuliah.
                             </td>
                         </tr>
@@ -145,7 +154,7 @@
                 <input type="text" name="nama" id="nama" required placeholder="Contoh: Pemrograman Web Lanjut" class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                     <label class="block text-xs font-bold text-[#161A30] mb-1">Tipe</label>
                     <select name="tipe" id="tipe" required class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
@@ -154,8 +163,12 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-[#161A30] mb-1">Bobot SKS</label>
-                    <input type="number" name="sks" id="sks" required min="1" max="6" value="3" class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
+                    <label class="block text-xs font-bold text-[#161A30] mb-1">SKS Teori</label>
+                    <input type="number" name="sks_teori" id="sks_teori" required min="0" max="6" value="2" class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#161A30] mb-1">SKS Praktikum</label>
+                    <input type="number" name="sks_praktikum" id="sks_praktikum" required min="0" max="6" value="1" class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20">
                 </div>
             </div>
 
@@ -170,10 +183,6 @@
                 </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-[#161A30] mb-1">Deskripsi Singkat</label>
-                <textarea name="deskripsi" id="deskripsi" rows="2" placeholder="Deskripsi silabus perkuliahan..." class="w-full bg-[#F4F5F9] text-[#161A30] px-3.5 py-2.5 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#5B50E5]/20"></textarea>
-            </div>
 
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#F1F3F7]">
                 <button type="button" onclick="closeModal()" class="px-4 py-2.5 rounded-xl bg-[#F4F5F9] text-[#464555] text-xs font-bold">Batal</button>
@@ -206,10 +215,10 @@
         document.getElementById('kode').value = c.kode;
         document.getElementById('nama').value = c.nama;
         document.getElementById('tipe').value = c.tipe;
-        document.getElementById('sks').value = c.sks;
+        document.getElementById('sks_teori').value = c.sks_teori ?? (c.sks >= 3 ? c.sks - 1 : c.sks);
+        document.getElementById('sks_praktikum').value = c.sks_praktikum ?? (c.sks >= 3 ? 1 : 0);
         document.getElementById('semester_ideal').value = c.semester_ideal || '';
         document.getElementById('kategori').value = c.kategori || '';
-        document.getElementById('deskripsi').value = c.deskripsi || '';
 
         modal.classList.remove('hidden');
     }
